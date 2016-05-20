@@ -9,13 +9,14 @@ import android.renderscript.Allocation;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-
+    private final static String TAG = MainActivity.class.getSimpleName();
     private ImageView mIvBG;
     private TextView mTvDesc;
 
@@ -40,16 +41,14 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public boolean onPreDraw() {
-                    ViewTreeObserver observer =
-                            mTvDesc.getViewTreeObserver();
+                    ViewTreeObserver observer = mTvDesc.getViewTreeObserver();
                     if (observer != null) {
                         observer.removeOnPreDrawListener(this);
                     }
                     Drawable drawable = mIvBG.getDrawable();
                     if (drawable != null &&
                                 drawable instanceof BitmapDrawable) {
-                        Bitmap bitmap =
-                                ((BitmapDrawable) drawable).getBitmap();
+                        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
                         if (bitmap != null) {
                             blur(bitmap, mTvDesc, 15);
                         }
@@ -59,18 +58,14 @@ public class MainActivity extends AppCompatActivity {
             };
 
     private void blur(Bitmap bkg, View view, float radius) {
-        Bitmap overlay = Bitmap.createBitmap(
-                view.getMeasuredWidth(),
-                view.getMeasuredHeight() + 80,
+        Log.d(TAG,"DO BLUR radius is "+radius);
+        Bitmap overlay = Bitmap.createBitmap( view.getMeasuredWidth(), view.getMeasuredHeight() + 80,
                 Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(overlay);
-        canvas.drawBitmap(bkg, -view.getLeft(),
-                -view.getTop() - 40, null);
+        canvas.drawBitmap(bkg, -view.getLeft(), -view.getTop() - 40, null);
         RenderScript rs = RenderScript.create(this);
-        Allocation overlayAlloc = Allocation.createFromBitmap(
-                rs, overlay);
-        ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(
-                rs, overlayAlloc.getElement());
+        Allocation overlayAlloc = Allocation.createFromBitmap( rs, overlay);
+        ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create( rs, overlayAlloc.getElement());
         blur.setInput(overlayAlloc);
         blur.setRadius(radius);
         blur.forEach(overlayAlloc);
