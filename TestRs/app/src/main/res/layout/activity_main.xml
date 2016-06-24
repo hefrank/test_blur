@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:scaleType="matrix"
-        android:src="@drawable/sh1"/>
+        android:scaleType="fitCenter"
+        />
 
     <TextView
         android:id="@+id/tv_desc"

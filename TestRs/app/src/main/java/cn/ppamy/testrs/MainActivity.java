@@ -1,6 +1,7 @@
 package cn.ppamy.testrs;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,24 +47,31 @@ public class MainActivity extends AppCompatActivity {
                     if (observer != null) {
                         observer.removeOnPreDrawListener(this);
                     }
-                    Drawable drawable = mIvBG.getDrawable();
-                    if (drawable != null &&
-                                drawable instanceof BitmapDrawable) {
-                        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-                        if (bitmap != null) {
-                            blur(bitmap, mTvDesc, 15);
-                        }
-                    }
+//                    Drawable drawable = mIvBG.getDrawable();
+//                    if (drawable != null &&
+//                                drawable instanceof BitmapDrawable) {
+//                        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+//                        if (bitmap != null) {
+//                            blur(bitmap, mTvDesc, 15);
+//                        }
+//                    }
+                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.sh1);
+                    blur(bitmap, mTvDesc, 15);
                     return true;
                 }
             };
 
     private void blur(Bitmap bkg, View view, float radius) {
         Log.d(TAG,"DO BLUR radius is "+radius);
-        Bitmap overlay = Bitmap.createBitmap( view.getMeasuredWidth(), view.getMeasuredHeight() + 80,
+        WindowManager wm = this.getWindowManager();
+
+        int width = wm.getDefaultDisplay().getWidth();
+        int height = wm.getDefaultDisplay().getHeight();
+
+        Bitmap overlay = Bitmap.createBitmap( width, height,
                 Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(overlay);
-        canvas.drawBitmap(bkg, -view.getLeft(), -view.getTop() - 40, null);
+        canvas.drawBitmap(bkg, 0, 0, null);
         RenderScript rs = RenderScript.create(this);
         Allocation overlayAlloc = Allocation.createFromBitmap( rs, overlay);
         ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create( rs, overlayAlloc.getElement());
